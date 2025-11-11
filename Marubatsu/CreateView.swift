@@ -12,6 +12,8 @@ struct CreateView: View {
     @State private var questionText = ""//テキストフィールドの文字を受け取る変数
     @State private var selectedAnswer = "O"//ピッカーで選ばれた解答を受け取る。
     let answers = ["O","X"]
+    @AppStorage("quiz") var quizzesData = Data()
+
 
     var body: some View {
         VStack{
@@ -57,7 +59,27 @@ struct CreateView: View {
             .foregroundStyle(.red)
             .padding()
 
+
         }
+
+        List{
+            ForEach(quizzesArray) { quiz in
+                HStack{
+                    Text("問題:\(quiz.question)")
+                    Text("解答:\(quiz.answer ? "O" : "X")")
+                }
+            }
+            .onMove { from,to in
+                //リストを並べ替えたときに実行する処理
+                replaceRow(from, to)
+            }
+            .onDelete(perform: remove)
+            
+        }
+        .toolbar(content: {
+            EditButton()
+        })
+
 
     }
 
@@ -93,6 +115,21 @@ struct CreateView: View {
             print(array)
         }
 
+    }
+
+    //並び替え処理と並び替え後の保存
+    func replaceRow(_ from: IndexSet, _ to: Int){
+        quizzesArray.move(fromOffsets: from, toOffset: to) //配列内での並び替え
+        if let encodedArray = try? JSONEncoder().encode(quizzesArray) {
+            quizzesData = encodedArray // エンコードできたらAppStorageに渡す(保存・更新)
+        }
+    }
+
+    func remove(index: IndexSet) {
+        quizzesArray.remove(atOffsets: index)
+        if let encodedArray = try? JSONEncoder().encode(quizzesArray) {
+            quizzesData = encodedArray // エンコードできたらAppStorageに渡す(保存・更新)
+        }
     }
 }
 

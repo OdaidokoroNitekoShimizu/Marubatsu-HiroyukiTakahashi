@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct Quiz: Identifiable,Codable{
+struct Quiz: Identifiable,Codable,Hashable{
     var id = UUID()//設問を区別するID
     var question: String//問題文
     var answer: Bool//解凍
