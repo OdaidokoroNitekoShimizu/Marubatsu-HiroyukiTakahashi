@@ -38,7 +38,6 @@ struct ContentView: View {
     }
 
     var body: some View {
-
         NavigationStack{
             GeometryReader {geometry in
                 VStack {
@@ -91,7 +90,6 @@ struct ContentView: View {
                 .alert(alertTitle, isPresented: $showingAlert) {
                     Button("OK",role:.cancel){}//ボタンを押した時の処理なし
                 }
-
                 //問題作成画面へ遷移するボタン
                 .toolbar{
                     //配置する場所を画面上部のバーの右端に設定
@@ -108,55 +106,57 @@ struct ContentView: View {
                 }
             }
         }
-
-
-    }
-    //問題を表示する関数
-    func showQuestion() -> String {
-        //配列から⚪︎⚪︎問目の問題文を取り出して代入
-        //        let question = quizExamples[currentQuestionNum].question
-        var question = "問題がありません"
-
-
-        //問題があるかどうかのチェック
-        if !quizzesArray.isEmpty{ //問題が存在する時
-            let quiz = quizzesArray[currentQuestionNum]
-            question = quiz.question
+        .onAppear(){
+            currentQuestionNum = 0
         }
-        return question
     }
 
-    //回答を表示する関数、正解なら次の問題を表示
-    func checkAnswer(yourAnswer: Bool) {
+        //問題を表示する関数
+        func showQuestion() -> String {
+            //配列から⚪︎⚪︎問目の問題文を取り出して代入
+            //        let question = quizExamples[currentQuestionNum].question
+            var question = "問題がありません"
 
-        if quizzesArray.isEmpty {return}//問題がない時は解答チェックしない。
 
-
-        let quiz = quizzesArray[currentQuestionNum]//表示されているクイズを取り出す。
-        let ans = quiz.answer//クイズから回答を取り出す。
-
-        if yourAnswer == ans {//正解の時
-            alertTitle = "正解"
-            //現在の問題番号が問題数(quizzesArray.count)を超えないように場合分け
-            if currentQuestionNum + 1 < quizzesArray.count {
-                //currentQuestionNumに1を足して次の問題に進む
-                currentQuestionNum += 1
-                //上記は省略表記
-                //currentQuestionNum = currentQuestionNum + 1
-
-            } else{
-                //超える時は0に戻す
-                currentQuestionNum = 0
+            //問題があるかどうかのチェック
+            if !quizzesArray.isEmpty{ //問題が存在する時
+                let quiz = quizzesArray[currentQuestionNum]
+                question = quiz.question
             }
-
-        }else{
-            //不正解の時
-            alertTitle = "不正解"
+            return question
         }
-        showingAlert = true //アラートを表示させる
-    }
-}
 
-#Preview {
-    ContentView()
-}
+        //回答を表示する関数、正解なら次の問題を表示
+        func checkAnswer(yourAnswer: Bool) {
+
+            if quizzesArray.isEmpty {return}//問題がない時は解答チェックしない。
+
+
+            let quiz = quizzesArray[currentQuestionNum]//表示されているクイズを取り出す。
+            let ans = quiz.answer//クイズから回答を取り出す。
+
+            if yourAnswer == ans {//正解の時
+                alertTitle = "正解"
+                //現在の問題番号が問題数(quizzesArray.count)を超えないように場合分け
+                if currentQuestionNum + 1 < quizzesArray.count {
+                    //currentQuestionNumに1を足して次の問題に進む
+                    currentQuestionNum += 1
+                    //上記は省略表記
+                    //currentQuestionNum = currentQuestionNum + 1
+
+                } else{
+                    //超える時は0に戻す
+                    currentQuestionNum = 0
+                }
+
+            }else{
+                //不正解の時
+                alertTitle = "不正解"
+            }
+            showingAlert = true //アラートを表示させる
+        }
+    }
+
+    #Preview {
+        ContentView()
+    }

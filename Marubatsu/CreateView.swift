@@ -13,6 +13,7 @@ struct CreateView: View {
     @State private var selectedAnswer = "O"//ピッカーで選ばれた解答を受け取る。
     let answers = ["O","X"]
     @AppStorage("quiz") var quizzesData = Data()
+    @FocusState private var isFocused: Bool
 
 
     var body: some View {
@@ -26,7 +27,7 @@ struct CreateView: View {
             }
             .padding()
             .textFieldStyle(.roundedBorder)
-
+            .focused($isFocused)
             //回答を選択するピッカー
             Picker("解答", selection: $selectedAnswer){
                 ForEach(answers, id: \.self) { answer in
@@ -46,6 +47,7 @@ struct CreateView: View {
             Button("追加"){
                 //追加ボタンを押された時の処理
                 addQuiz(question: questionText, answer: selectedAnswer)
+                isFocused = false
             }
             .padding()
 
@@ -53,6 +55,7 @@ struct CreateView: View {
             Button {
                 quizzesArray.removeAll()//配列を空に
                 UserDefaults.standard.removeObject(forKey: "quiz")//保存されているものも全削除
+                isFocused = false
             } label: {
                 Text("全削除")
             }
@@ -61,7 +64,9 @@ struct CreateView: View {
 
 
         }
-
+        .onTapGesture {
+            isFocused = false
+        }
         List{
             ForEach(quizzesArray) { quiz in
                 HStack{
@@ -74,7 +79,7 @@ struct CreateView: View {
                 replaceRow(from, to)
             }
             .onDelete(perform: remove)
-            
+
         }
         .toolbar(content: {
             EditButton()
@@ -122,6 +127,7 @@ struct CreateView: View {
         quizzesArray.move(fromOffsets: from, toOffset: to) //配列内での並び替え
         if let encodedArray = try? JSONEncoder().encode(quizzesArray) {
             quizzesData = encodedArray // エンコードできたらAppStorageに渡す(保存・更新)
+
         }
     }
 
@@ -129,6 +135,7 @@ struct CreateView: View {
         quizzesArray.remove(atOffsets: index)
         if let encodedArray = try? JSONEncoder().encode(quizzesArray) {
             quizzesData = encodedArray // エンコードできたらAppStorageに渡す(保存・更新)
+
         }
     }
 }
