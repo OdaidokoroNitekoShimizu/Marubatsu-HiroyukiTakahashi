@@ -104,11 +104,13 @@ struct ContentView: View {
 
                     }
                 }
+                .onAppear(){
+                    currentQuestionNum = 0
+                    print("onAppearです！")
+                }
             }
         }
-        .onAppear(){
-            currentQuestionNum = 0
-        }
+
     }
 
         //問題を表示する関数
